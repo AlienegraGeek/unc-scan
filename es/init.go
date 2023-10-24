@@ -1,9 +1,11 @@
-package elastic
+package es
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/olivere/elastic/v7"
+	"uscan/spec"
 )
 
 // 索引mapping定义，这里仿微博消息结构定义
@@ -36,13 +38,15 @@ const mapping = `
   }
 }`
 
+//var client elastic.Client
+
 func Init() {
 	// 创建ES client用于后续操作ES
-	//client, err := elastic.NewClient(
+	//client, err := es.NewClient(
 	//	// 设置ES服务地址，支持多个地址
-	//	elastic.SetURL("http://127.0.0.1:9200", "http://127.0.0.1:9201"),
+	//	es.SetURL("http://127.0.0.1:9200", "http://127.0.0.1:9201"),
 	//	// 设置基于http base auth验证的账号和密码
-	//	elastic.SetBasicAuth("user", "secret"))
+	//	es.SetBasicAuth("user", "secret"))
 	//if err != nil {
 	//	// Handle error
 	//	fmt.Printf("连接失败: %v\n", err)
@@ -52,7 +56,7 @@ func Init() {
 
 	// 创建client
 	client, err := elastic.NewClient(
-		//elastic.SetURL("http://127.0.0.1:9200", "http://127.0.0.1:9201"),
+		//es.SetURL("http://127.0.0.1:9200", "http://127.0.0.1:9201"),
 		elastic.SetURL("http://127.0.0.1:9200"),
 		// 禁用嗅探器用于兼容内网ip
 		elastic.SetSniff(false),
@@ -80,4 +84,40 @@ func Init() {
 			panic(err)
 		}
 	}
+
+	// 创建创建一条微博
+	//msg1 := spec.Weibo{User: "olivere", Message: "打酱油的一天", Retweets: 0}
+	//// 使用client创建一个新的文档
+	//put1, err := client.Index().
+	//	Index("weibo"). // 设置索引名称
+	//	Id("1").        // 设置文档id
+	//	BodyJson(msg1). // 指定前面声明的微博内容
+	//	Do(ctx)         // 执行请求，需要传入一个上下文对象
+	//if err != nil {
+	//	// Handle error
+	//	panic(err)
+	//}
+	//fmt.Printf("文档Id %s, 索引名 %s\n", put1.Id, put1.Index)
+
+	// 根据id查询文档
+	get1, err := client.Get().
+		Index("weibo"). // 指定索引名
+		Id("1").        // 设置文档id
+		Do(ctx)         // 执行请求
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+	if get1.Found {
+		fmt.Printf("文档id=%s 版本号=%d 索引名=%s\n", get1.Id, get1.Version, get1.Index)
+	}
+	// 手动将文档内容转换成go struct对象
+	msg2 := spec.Weibo{}
+	// 提取文档内容，原始类型是json数据
+	data, _ := get1.Source.MarshalJSON()
+	// 将json转成struct结果
+	_ = json.Unmarshal(data, &msg2)
+	// 打印结果
+	fmt.Println(msg2.Message)
+
 }

@@ -1,6 +1,6 @@
 package main
 
-import "uscan/elastic"
+import "uscan/es"
 
 //func main() {
 //
@@ -35,5 +35,5 @@ import "uscan/elastic"
 
 func main() {
 	//chain.GenData()
-	elastic.Init()
+	es.Init()
 }
