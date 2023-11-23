@@ -2,7 +2,10 @@ module uscan
 
 go 1.19
 
-require github.com/btcsuite/btcd v0.23.4
+require (
+	github.com/btcsuite/btcd v0.23.4
+	github.com/olivere/elastic/v7 v7.0.32
+)
 
 require (
 	github.com/btcsuite/btcd/btcec/v2 v2.1.3 // indirect
@@ -15,8 +18,7 @@ require (
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
-	github.com/olivere/elastic/v7 v7.0.32 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 // indirect
-	golang.org/x/sys v0.0.0-20200814200057-3d37ad5750ed // indirect
+	golang.org/x/crypto v0.1.0 // indirect
+	golang.org/x/sys v0.1.0 // indirect
 )

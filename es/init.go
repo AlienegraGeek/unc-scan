@@ -56,7 +56,7 @@ func Init() {
 
 	// 创建client
 	client, err := elastic.NewClient(
-		//es.SetURL("http://127.0.0.1:9200", "http://127.0.0.1:9201"),
+		//elastic.SetURL("http://127.0.0.1:9200", "http://127.0.0.1:9201"),
 		elastic.SetURL("http://127.0.0.1:9200"),
 		// 禁用嗅探器用于兼容内网ip
 		elastic.SetSniff(false),
@@ -75,6 +75,7 @@ func Init() {
 	if err != nil {
 		// Handle error
 		panic(err)
+		//fmt.Println("weibo索引不存在")
 	}
 	if !exists {
 		// weibo索引不存在，则创建一个
@@ -86,18 +87,18 @@ func Init() {
 	}
 
 	// 创建创建一条微博
-	//msg1 := spec.Weibo{User: "olivere", Message: "打酱油的一天", Retweets: 0}
-	//// 使用client创建一个新的文档
-	//put1, err := client.Index().
-	//	Index("weibo"). // 设置索引名称
-	//	Id("1").        // 设置文档id
-	//	BodyJson(msg1). // 指定前面声明的微博内容
-	//	Do(ctx)         // 执行请求，需要传入一个上下文对象
-	//if err != nil {
-	//	// Handle error
-	//	panic(err)
-	//}
-	//fmt.Printf("文档Id %s, 索引名 %s\n", put1.Id, put1.Index)
+	msg1 := spec.Weibo{User: "olivere", Message: "打酱油的一天", Retweets: 0}
+	// 使用client创建一个新的文档
+	put1, err := client.Index().
+		Index("weibo"). // 设置索引名称
+		Id("1").        // 设置文档id
+		BodyJson(msg1). // 指定前面声明的微博内容
+		Do(ctx)         // 执行请求，需要传入一个上下文对象
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+	fmt.Printf("文档Id %s, 索引名 %s\n", put1.Id, put1.Index)
 
 	// 根据id查询文档
 	get1, err := client.Get().
@@ -120,4 +121,24 @@ func Init() {
 	// 打印结果
 	fmt.Println(msg2.Message)
 
+	//根据文档id更新内容
+	_, err = client.Update().
+		Index("weibo").                             // 设置索引名
+		Id("1").                                    // 文档id
+		Doc(map[string]interface{}{"retweets": 0}). // 更新retweets=0，支持传入键值结构
+		Do(ctx)                                     // 执行ES查询
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+
+	// 根据id删除一条数据
+	_, err = client.Delete().
+		Index("weibo").
+		Id("1").
+		Do(ctx)
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
 }

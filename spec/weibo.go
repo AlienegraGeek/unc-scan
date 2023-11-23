@@ -12,6 +12,6 @@ type Weibo struct {
 	Image    string                `json:"image,omitempty"`    // 图片
 	Created  time.Time             `json:"created,omitempty"`  // 创建时间
 	Tags     []string              `json:"tags,omitempty"`     // 标签
-	Location string                `json:"location,omitempty"` //位置
+	Location string                `json:"location,omitempty"` // 位置
 	Suggest  *elastic.SuggestField `json:"suggest_field,omitempty"`
 }
