@@ -38,7 +38,8 @@ const mapping = `
   }
 }`
 
-//var client elastic.Client
+var ECLIENT *elastic.Client
+var ECTX context.Context
 
 func Init() {
 	// 创建ES client用于后续操作ES
@@ -65,11 +66,17 @@ func Init() {
 		// Handle error
 		fmt.Printf("连接失败: %v\n", err)
 	} else {
+		ECLIENT = client
 		fmt.Println("连接成功")
 	}
 	// 执行ES请求需要提供一个上下文对象
 	ctx := context.Background()
+	ECTX = ctx
+	mockData(ctx, client)
+	//crud(client, ctx)
+}
 
+func crud(client *elastic.Client, ctx context.Context) {
 	// 首先检测下weibo索引是否存在
 	exists, err := client.IndexExists("weibo").Do(ctx)
 	if err != nil {
